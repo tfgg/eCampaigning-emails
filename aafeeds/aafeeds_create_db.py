@@ -5,7 +5,7 @@
 from sqlalchemy import *
 
 # Create the database engine
-db = create_engine('sqlite:////home2/fairsay/duane-scripts/aafeeds/aafeeds.sqlite')
+db = create_engine('sqlite:///aafeeds.sqlite')
 
 db.echo = False  # Try changing this to True and see what happens
 

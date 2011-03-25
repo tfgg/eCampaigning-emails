@@ -23,7 +23,7 @@ from BeautifulSoup import BeautifulSoup
 from local_settings import emailuser, emailpass
 
 # Create and the database engine
-db = create_engine('aafeeds.sqlite')
+db = create_engine('sqlite:///aafeeds.sqlite')
 db.echo = False  # Try changing this to True and see what happens
 
 # Load the table schema
@@ -59,7 +59,7 @@ emailcount = len(emailids)
 # Source: http://effbot.org/zone/yahoo-term-extraction.htm
 # UnicodeDecodeError Fixed based on: http://wiki.python.org/moin/UnicodeDecodeError
 import urllib
-from elementtree import ElementTree
+import lxml.etree as ElementTree
 
 appid = 'p.Ndw2LV34HuBKpqWFPmRoLGYvVWTney5WYCOkG3V5k3mEzeA0TqelNQpD5neA--'
 
@@ -83,7 +83,7 @@ def termExtraction(appid, context, query=None):
 # Fetch attributes from each email
 for emailid in emailids:
     # CSO mailbox: Problem emails # 4558, 4559
-    emailidstart = 4559 # For limiting purposes
+    emailidstart = 0 #4559 # For limiting purposes
     emailidstop = 6000 # For limiting purposes
     if int(emailid) > emailidstart and int(emailid) < emailidstop: # for limiting purposes
         emailRaw = mailbox.fetch(emailid, '(RFC822)')
@@ -185,6 +185,7 @@ for emailid in emailids:
                       seen.add(url)
                       pieces = urlparse.urlparse(url)
                       if pieces[0]=='http':
+                         pieces = [piece.encode('utf-8') for piece in pieces]
                          emaillinks = emaillinks + [str(urlparse.urlunparse(pieces))]
 
                # Populate the data to append to emailindex table
@@ -213,7 +214,7 @@ for emailid in emailids:
                'EmailRawHeader': receivedHeader,
                'EmailRawAll': None,
                }
-               
+
                # Insert data into table
                i = emailindex.insert()
                i.execute(emailindexdata)
